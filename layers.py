@@ -17,8 +17,12 @@ class GraphAttentionLayer(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.xavier_uniform_(self.W.data, gain=1.414)
-        nn.init.xavier_uniform_(self.a.data, gain=1.414)
+        fan_in_W, fan_out_W = self.W.size()
+        fan_in_a, fan_out_a = self.a.size()
+        stdv_W = 1.414 * math.sqrt(6.0 / (fan_in_W + fan_out_W))
+        stdv_a = 1.414 * math.sqrt(6.0 / (fan_in_a + fan_out_a))
+        self.W.data.uniform_(-stdv_W, stdv_W)
+        self.a.data.uniform_(-stdv_a, stdv_a)
 
     def forward(self, h, adj):
         Wh = torch.mm(h, self.W)
